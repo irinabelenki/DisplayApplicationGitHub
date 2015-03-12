@@ -5,18 +5,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.os.AsyncTask;
 import android.util.JsonReader;
-import android.util.JsonToken;
 import android.util.Log;
-import android.widget.Toast;
 
 class LoadDataTask extends AsyncTask<String, String, String> {
     public static final String TAG = "LoadDataTask";
@@ -33,10 +29,8 @@ class LoadDataTask extends AsyncTask<String, String, String> {
         try {
             URL url = new URL(f_url[0]);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            //readStream(connection.getInputStream());
-            Log.i(TAG, "before read");
             List events = readJsonStream(connection.getInputStream());
-            Log.i(TAG, "events number" + events.size());
+            Log.i(TAG, "events number: " + events.size());
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
@@ -76,11 +70,22 @@ class LoadDataTask extends AsyncTask<String, String, String> {
 
     public List readJsonStream(InputStream in) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+        String image = null;
         List events = null;
         try {
             reader.beginObject();
-            String image = reader.nextString();
-            events = readEventsArray(reader);
+            while (reader.hasNext()) {
+                String name = reader.nextName();
+                if (name.equals("image")) {
+                    image = reader.nextString();
+                }
+                else if(name.equals("events")) {
+                    events = readEventsArray(reader);
+                }
+                else {
+                    reader.skipValue();
+                }
+            }
             reader.endObject();
         }
         catch (Exception e) {
@@ -114,6 +119,7 @@ class LoadDataTask extends AsyncTask<String, String, String> {
             String name = reader.nextName();
             if (name.equals("name")) {
                 eventName = reader.nextString();
+                Log.i(TAG, "event name: " + eventName);
             }
             else if (name.equals("details")) {
                 eventDetails = readEventDetails(reader);
