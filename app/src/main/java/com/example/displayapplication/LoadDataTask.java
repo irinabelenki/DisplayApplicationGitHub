@@ -37,32 +37,10 @@ class LoadDataTask extends AsyncTask<String, String, String> {
         return null;
     }
 
-    private void readStream(InputStream in) {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(in));
-            String line = "";
-            while ((line = reader.readLine()) != null) {
-                Log.i(TAG, line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     protected void onProgressUpdate(String... progress) {
         //TODO
     }
 
-    // Once Music File is downloaded
     @Override
     protected void onPostExecute(String file_url) {
         //TODO fill list
