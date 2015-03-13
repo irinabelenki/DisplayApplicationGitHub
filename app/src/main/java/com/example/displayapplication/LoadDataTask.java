@@ -47,6 +47,7 @@ class LoadDataTask extends AsyncTask<String, String, List<EventItem>> {
     @Override
     protected void onPostExecute(List<EventItem> eventList) {
         Log.i(TAG, "events number: " + eventList.size());
+        adapter.clear();
         adapter.addAll(eventList);
         adapter.notifyDataSetChanged();
     }

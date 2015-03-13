@@ -40,7 +40,7 @@ public class EventListAdapter extends ArrayAdapter<EventItem> {
         }
 
         holder.eventName.setText(rowItem.getName());
-        //holder.eventImage.setImageResource(rowItem.getImage());
+        holder.eventImage.setImageResource(android.R.drawable.ic_menu_save);
 
         return convertView;
     }

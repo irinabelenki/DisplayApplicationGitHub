@@ -1339,7 +1339,7 @@ containing a value of this type.
         public static final int ifRoom=0x7f080018;
         public static final int image=0x7f080023;
         public static final int listMode=0x7f080009;
-        public static final int listView1=0x7f080040;
+        public static final int listView=0x7f080040;
         public static final int list_item=0x7f080025;
         public static final int middle=0x7f080015;
         public static final int never=0x7f080019;

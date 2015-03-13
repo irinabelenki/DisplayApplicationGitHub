@@ -50,9 +50,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		};
 		aboutButton.setOnClickListener(aboutButtonListener);
 
-        listView = (ListView) findViewById(R.id.listView1);
+        listView = (ListView) findViewById(R.id.listView);
         eventItems = new ArrayList<EventItem>();
-        eventItems.add(new EventItem("noname","","","",""));
+        eventItems.add(new EventItem("No events","","","",""));
 
         eventAdapter = new EventListAdapter(this, R.layout.event_item, eventItems);
         listView.setAdapter(eventAdapter);
