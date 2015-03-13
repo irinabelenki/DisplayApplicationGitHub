@@ -2,18 +2,27 @@ package com.example.displayapplication;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 	
 	private Button updateButton;
 	private Button aboutButton;
+    private ListView listView;
+    List<EventItem> eventItems;
+    EventListAdapter eventAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +34,9 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				Toast.makeText(getApplicationContext(), "Button Update clicked", Toast.LENGTH_SHORT).show();
-				new LoadDataTask().execute("http://metovaweb.watchitoo.com/app_data.json");
+				LoadDataTask task = new LoadDataTask();
+                task.setAdapter(eventAdapter);
+                task.execute("http://metovaweb.watchitoo.com/app_data.json");
 			}
 		};
 		updateButton.setOnClickListener(updateButtonListener);
@@ -38,6 +49,14 @@ public class MainActivity extends ActionBarActivity {
 			}
 		};
 		aboutButton.setOnClickListener(aboutButtonListener);
+
+        listView = (ListView) findViewById(R.id.listView1);
+        eventItems = new ArrayList<EventItem>();
+        eventItems.add(new EventItem("noname","","","",""));
+
+        eventAdapter = new EventListAdapter(this, R.layout.event_item, eventItems);
+        listView.setAdapter(eventAdapter);
+        listView.setOnItemClickListener(this);
     }
 
 
@@ -58,5 +77,15 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        EventItem item = eventItems.get(position);
+        String str = item.getName() + " " + item.getColor() +
+                item.getDate() + item.getEventEnd();
+        Toast toast = Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
     }
 }

@@ -12,8 +12,13 @@ import android.os.AsyncTask;
 import android.util.JsonReader;
 import android.util.Log;
 
-class LoadDataTask extends AsyncTask<String, String, String> {
+class LoadDataTask extends AsyncTask<String, String, List<EventItem>> {
     public static final String TAG = "LoadDataTask";
+    private EventListAdapter adapter;
+
+    public void setAdapter(EventListAdapter adapter) {
+        this.adapter = adapter;
+    }
 
     @Override
     protected void onPreExecute() {
@@ -22,17 +27,17 @@ class LoadDataTask extends AsyncTask<String, String, String> {
     }
 
     @Override
-    protected String doInBackground(String... f_url) {
-
+    protected List<EventItem> doInBackground(String... f_url) {
+        List<EventItem> eventList = null;
         try {
             URL url = new URL(f_url[0]);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            List events = readJsonStream(connection.getInputStream());
-            Log.i(TAG, "events number: " + events.size());
+            eventList = readJsonStream(connection.getInputStream());
+            Log.i(TAG, "events number: " + eventList.size());
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-        return null;
+        return eventList;
     }
 
     protected void onProgressUpdate(String... progress) {
@@ -40,14 +45,16 @@ class LoadDataTask extends AsyncTask<String, String, String> {
     }
 
     @Override
-    protected void onPostExecute(String file_url) {
-        //TODO fill list
+    protected void onPostExecute(List<EventItem> eventList) {
+        Log.i(TAG, "events number: " + eventList.size());
+        adapter.addAll(eventList);
+        adapter.notifyDataSetChanged();
     }
 
-    public List readJsonStream(InputStream in) throws IOException {
+    public List<EventItem> readJsonStream(InputStream in) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         String image = null;
-        List events = null;
+        List<EventItem> eventList = null;
         try {
             reader.beginObject();
             while (reader.hasNext()) {
@@ -56,7 +63,7 @@ class LoadDataTask extends AsyncTask<String, String, String> {
                     image = reader.nextString();
                 }
                 else if(name.equals("events")) {
-                    events = readEventsArray(reader);
+                    eventList = readEventsArray(reader);
                 }
                 else {
                     reader.skipValue();
@@ -69,25 +76,25 @@ class LoadDataTask extends AsyncTask<String, String, String> {
         }
         finally {
             reader.close();
-            return events;
+            return eventList;
         }
     }
 
 
     public List readEventsArray(JsonReader reader) throws IOException {
-        List events = new ArrayList();
+        List<EventItem> eventList = new ArrayList<EventItem>();
 
         reader.beginArray();
         while (reader.hasNext()) {
-            events.add(readEvent(reader));
+            eventList.add(readEvent(reader));
         }
         reader.endArray();
-        return events;
+        return eventList;
     }
 
-    public Event readEvent(JsonReader reader) throws IOException {
+    public EventItem readEvent(JsonReader reader) throws IOException {
         String eventName = null;
-        Details eventDetails = null;
+        EventDetails eventDetails = null;
         String eventImage = null;
 
         reader.beginObject();
@@ -108,10 +115,10 @@ class LoadDataTask extends AsyncTask<String, String, String> {
             }
         }
         reader.endObject();
-        return new Event(eventName, eventDetails, eventImage);
+        return new EventItem(eventName, eventDetails, eventImage);
     }
 
-    public Details readEventDetails(JsonReader reader) throws IOException {
+    public EventDetails readEventDetails(JsonReader reader) throws IOException {
         String color = null;
         String date = null;
         String event_end = null;
@@ -132,31 +139,6 @@ class LoadDataTask extends AsyncTask<String, String, String> {
             }
         }
         reader.endObject();
-        return new Details(color, date, event_end);
+        return new EventDetails(color, date, event_end);
     }
-
-    private class Details {
-        private String color;
-        private String date;
-        private String event_end;
-
-        Details(String color, String date, String event_end) {
-            this.color = color;
-            this.date = date;
-            this.event_end = event_end;
-        }
-    }
-
-    private class Event {
-        private String name;
-        private Details details;
-        private String image;
-
-        Event( String name, Details details, String image) {
-            this.name = name;
-            this.details = details;
-            this.image = image;
-        }
-    }
-
 }
