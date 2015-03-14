@@ -15,9 +15,14 @@ import android.util.Log;
 class LoadDataTask extends AsyncTask<String, String, List<EventItem>> {
     public static final String TAG = "LoadDataTask";
     private EventListAdapter adapter;
+    private EventDataSource datasource;
 
     public void setAdapter(EventListAdapter adapter) {
         this.adapter = adapter;
+    }
+
+    public void setDatasource(EventDataSource datasource) {
+        this.datasource = datasource;
     }
 
     @Override
@@ -47,7 +52,10 @@ class LoadDataTask extends AsyncTask<String, String, List<EventItem>> {
     @Override
     protected void onPostExecute(List<EventItem> eventList) {
         Log.i(TAG, "events number: " + eventList.size());
-        adapter.clear();
+        for(int i=0;i<eventList.size();i++) {
+            EventItem item = eventList.get(i);
+            datasource.createEvent(item.getName(), item.getColor(), item.getDate(), item.getEventEnd(), item.getImage());
+        }
         adapter.addAll(eventList);
         adapter.notifyDataSetChanged();
     }

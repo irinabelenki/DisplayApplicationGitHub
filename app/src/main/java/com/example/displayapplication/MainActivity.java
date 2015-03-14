@@ -21,8 +21,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private Button updateButton;
 	private Button aboutButton;
     private ListView listView;
-    List<EventItem> eventItems;
-    EventListAdapter eventAdapter;
+    private List<EventItem> eventItems;
+    private EventListAdapter eventAdapter;
+    private EventDataSource datasource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 				Toast.makeText(getApplicationContext(), "Button Update clicked", Toast.LENGTH_SHORT).show();
 				LoadDataTask task = new LoadDataTask();
                 task.setAdapter(eventAdapter);
+                task.setDatasource(datasource);
                 task.execute("http://metovaweb.watchitoo.com/app_data.json");
 			}
 		};
@@ -52,9 +54,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
         listView = (ListView) findViewById(R.id.listView);
         eventItems = new ArrayList<EventItem>();
-        eventItems.add(new EventItem("No events","","","",""));
+        eventItems.add(new EventItem("No events", "", "", "", ""));
 
-        eventAdapter = new EventListAdapter(this, R.layout.event_item, eventItems);
+        datasource = new EventDataSource(this);
+        datasource.open();
+        List<EventItem> eventsFromDB = datasource.getAllEvents();
+        if(eventsFromDB.size() > 0){
+            eventItems = eventsFromDB;
+        }
+
+        eventAdapter = new EventListAdapter(this, R.layout.event_item, eventItems );
         listView.setAdapter(eventAdapter);
         listView.setOnItemClickListener(this);
     }
@@ -82,10 +91,14 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         EventItem item = eventItems.get(position);
-        String str = item.getName() + " " + item.getColor() +
-                item.getDate() + item.getEventEnd();
-        Toast toast = Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), item.toString(), Toast.LENGTH_LONG);
         toast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        datasource.close();
+        super.onDestroy();
     }
 }

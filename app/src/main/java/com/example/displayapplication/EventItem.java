@@ -6,6 +6,7 @@ public class EventItem {
     private String date;
     private String eventEnd;
     private String image;
+    private long id = -1;
 
     public EventItem(String name, String color, String date, String eventEnd, String image) {
         this.name = name;
@@ -23,24 +24,60 @@ public class EventItem {
         this.image = image;
     }
 
+    public EventItem() {
+        this.name = "";
+        this.color = "";
+        this.date = "";
+        this.eventEnd = "";
+        this.image = "";
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getColor() {
         return color;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public String getDate() {
         return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getEventEnd() {
         return eventEnd;
     }
 
+    public void setEventEnd(String eventEnd) {
+        this.eventEnd = eventEnd;
+    }
+
     public String getImage() {
         return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     @Override
