@@ -77,6 +77,10 @@ public class EventDataSource {
         EventItem event = new EventItem();
         event.setId(cursor.getLong(0));
         event.setName(cursor.getString(1));
+        event.setColor(cursor.getString(2));
+        event.setDate(cursor.getString(3));
+        event.setEventEnd(cursor.getString(4));
+        event.setImage(cursor.getString(5));
         return event;
     }
 }

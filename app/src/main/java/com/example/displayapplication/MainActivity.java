@@ -1,7 +1,9 @@
 package com.example.displayapplication;
 
+import android.content.pm.PackageManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +36,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		OnClickListener updateButtonListener = new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "Button Update clicked", Toast.LENGTH_SHORT).show();
 				LoadDataTask task = new LoadDataTask();
                 task.setAdapter(eventAdapter);
                 task.setDatasource(datasource);
@@ -47,7 +48,19 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		OnClickListener aboutButtonListener = new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "Button About clicked", Toast.LENGTH_SHORT).show();
+                String versionName = "No version name";
+                int versionCode = -1;
+                try {
+                    versionName = MainActivity.this.getPackageManager()
+                            .getPackageInfo(MainActivity.this.getPackageName(), 0).versionName;
+                    versionCode = MainActivity.this.getPackageManager()
+                            .getPackageInfo(MainActivity.this.getPackageName(), 0).versionCode;
+                }
+                catch (PackageManager.NameNotFoundException e) {
+                    Log.e("MainActivity", e.getMessage());
+                }
+				Toast.makeText(getApplicationContext(), "Version name: " + versionName +
+                                                        ", version code: " + versionCode, Toast.LENGTH_SHORT).show();
 			}
 		};
 		aboutButton.setOnClickListener(aboutButtonListener);
